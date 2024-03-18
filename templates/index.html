@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Image Browser</title>
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/style.css') }}" >
+</head>
+
+<body>
+<div class="container">
+    <h1>Upload Image</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" id="btn-upload" name="file">
+        <input type="submit" value="Upload">
+    </form>
+    {% if image_data %}
+    <div class="upload-result"> 
+        <h3> Image Upload Result </h3> 
+        <img src="data:image/jpeg;base64,{{ image_data }}" alt="Image">
+    </div>
+    {% endif %}
+
+    {% if encryptedImage %}
+    <div class="encryption-result"> 
+        <h3> Image Encryption Result </h3> 
+        <img src="data:image/jpeg;base64,{{ encryptedImage }}" alt="Image">
+    </div>
+    {% endif %}
+
+    <!-- {% if decryptedImage %}
+    <div class="decryption-result"> 
+        <h3> Image Decryption Result </h3> 
+        <img src="data:image/jpeg;base64,{{ decryptedImage }}" alt="Image">
+    </div>
+    {% endif %} -->
+    <h1>Download Image</h1>
+    <input type="button" id="btn-download" value="Download">
+</div>
+</body>
+
+</html>
+
+<script>
+    // function to download file
+    function download(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:image/jpeg;base64,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+
+    // Start file download.
+    document.getElementById("btn-download").addEventListener("click", function () {
+        // You'll need to fetch the decrypted image from the server and provide it as 'text' here
+        var text = "";
+        var filename = "decrypted_image.jpg";
+        download(filename, text);
+    }, false);
+</script>

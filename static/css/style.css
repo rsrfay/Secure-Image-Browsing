@@ -1,0 +1,53 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0; 
+    background-image: url('/static/img/gtyt.jpg');
+    background-size: cover; /* Fix background size to cover the page */
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    height: 100vh; /* Set the height of the body to the full viewport height */
+}
+
+.container {
+    width: 80%;
+    background-image: url('/static/img/bgg.jpg');
+    /*background-color: rgba(234, 245, 209, 0.861); /* White background for container with some transparency */
+    padding: 10px; /* Add some padding */
+    border-radius: 30px; /* Rounded corners */
+    box-shadow: 0 0 10px rgba(158, 135, 219, 0.1); /* Drop shadow */
+}
+
+h1, p {
+    text-align: center;
+    color: #000; /* Black text color */
+}
+
+input[type="file"],
+input[type="button"] {
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #000; /* Black text color */
+    background-color: rgba(229, 181, 250, 0.9); /* Light gray background with some transparency */
+}
+
+input[type="file"] {
+    width: 200px;
+    cursor: pointer;
+}
+
+input[type="button"] {
+    background-color: #ed8cb9;
+    color: rgb(230, 237, 208);
+    cursor: pointer;
+}
+
+input[type="button"]:hover {
+    background-color: #f4a3ab;
+}
