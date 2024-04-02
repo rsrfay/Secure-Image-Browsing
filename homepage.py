@@ -29,78 +29,27 @@ def index():
 
 @app.route('/encrypt_decrypt', methods=['POST'])
 
-def encrypt_decrypt():
-    # Check if the request contains a file
-    if 'file' not in request.files:
-        return 'No file part in the request'
+# def encrypt_decrypt():
+#     # Check if the request contains a file
+#     if 'file' not in request.files:
+#         return 'No file in the request'
 
-    file = request.files['file']
+#     file = request.files['file']
 
-    # Check if a file was uploaded
-    if file.filename == '':
-        return 'No file selected'
+#     # Check if a file was uploaded
+#     if file.filename == '':
+#         return 'No file selected'
 
-    # Read the image file
-    img_bytes = file.read()
+#     # Read the image file
+#     img_bytes = file.read()
 
-    # Encrypt the image
-    encrypted_img = encrypt_image(img_bytes)
+#     # Encrypt the image
+#     encrypted_img = encrypt_image(img_bytes)
 
-    # Decrypt the image
-    decrypted_img = decrypt_image(encrypted_img)
+#     # Decrypt the image
+#     decrypted_img = decrypt_image(encrypted_img)
 
-    return decrypted_img
-
-# def encrypt_image(img_bytes):
-#     mode = AES.MODE_CBC
-#     key_size = 32
-#     iv_size = AES.block_size if mode == AES.MODE_CBC else 0
-
-#     # Load original image
-#     image_orig = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), -1)
-#     row_orig, column_orig, depth_orig = image_orig.shape
-
-#     # Encrypt
-#     key = get_random_bytes(key_size)
-#     iv = get_random_bytes(iv_size)
-#     cipher = AES.new(key, AES.MODE_CBC, iv) if mode == AES.MODE_CBC else AES.new(key, AES.MODE_ECB)
-#     image_orig_bytes_padded = pad(img_bytes, AES.block_size)
-#     ciphertext = cipher.encrypt(image_orig_bytes_padded)
-
-#     # Convert ciphertext bytes to encrypted image data
-#     padded_size = len(image_orig_bytes_padded) - len(img_bytes)
-#     void = column_orig * depth_orig - iv_size - padded_size
-#     iv_ciphertext_void = iv + ciphertext + bytes(void)
-#     # encrypted_img = cv2.imencode('.jpg', np.frombuffer(iv_ciphertext_void, dtype=np.uint8).reshape(row_orig, column_orig, depth_orig))[1].tostring()
- 
-#     # Reshape the array to match the dimensions of the original image
-#     expected_size = row_orig * column_orig * depth_orig
-#     if len(iv_ciphertext_void) != expected_size:
-#         return b'Invalid image size'
-#     reshaped_array = np.frombuffer(iv_ciphertext_void, dtype=np.uint8).reshape(row_orig, column_orig, depth_orig)
-
-#     # Encode the reshaped array to a JPEG image
-#     success, encoded_img = cv2.imencode('.jpg', reshaped_array)
-
-#     if not success:
-#         return b'Encoding failed'
-
-#     # Convert encoded image data to bytes
-#     encrypted_img = encoded_img.tobytes()
-    
-#      # Prepare the INSERT query
-#     insert_query = 'INSERT INTO images (encryptedImg) VALUES (%s)'
-
-#     # Create a cursor object to execute SQL queries
-#     cursor = mydb.cursor()
-
-#     # Execute the INSERT statement with the encrypted image data
-#     cursor.execute(insert_query, (encrypted_img,))
-
-#     # Commit the transaction
-#     mydb.commit()
-
-#     return encrypted_img
+#     return decrypted_img
 
 # can use this ver
 def encrypt_image(img_bytes):
