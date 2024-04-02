@@ -189,10 +189,15 @@ def upload_file():
     # Commit the transaction
     mydb.commit()
 
+    # Encode image data and encrypted image data to Base64
+    encoded_image_data = base64.b64encode(image_data).decode('utf-8')
+    encoded_encrypted_img = base64.b64encode(encrypted_img).decode('utf-8')
+
+
     print('File uploaded successfully: {}'.format(file_path))
     # return 'File uploaded successfully: {}'.format(file_path)
     # return redirect(url_for('index'))
-    return render_template('index.html', upload_file=True, image_data=image_data, encryptedImage=encrypted_img)
+    return render_template('index.html', upload_file=True, image_data=encoded_image_data, encryptedImage=encoded_encrypted_img)
 
 if __name__ == '__main__':
     app.run(debug=True)
