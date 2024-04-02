@@ -25,7 +25,6 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     # Create a cursor object
-    
     return render_template('index.html')
 
 @app.route('/encrypt_decrypt', methods=['POST'])
