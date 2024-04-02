@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for
 import os
 import cv2
 import numpy as np
@@ -189,8 +189,9 @@ def upload_file():
     # Commit the transaction
     mydb.commit()
 
-    # Store the file path in the database or use it as needed
-    return 'File uploaded successfully: {}'.format(file_path)
+    print('File uploaded successfully: {}'.format(file_path))
+    # return 'File uploaded successfully: {}'.format(file_path)
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
