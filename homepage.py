@@ -11,7 +11,6 @@ import base64
 from PIL import Image
 import sys
 
-# import sys
 
 # Database 
 mydb = mysql.connector.connect(
