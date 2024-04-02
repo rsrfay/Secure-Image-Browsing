@@ -72,15 +72,17 @@ def encrypt_image(img_bytes):
     # Encrypt the padded image bytes
     ciphertext = cipher.encrypt(image_orig_bytes_padded)
 
-    # # Convert ciphertext bytes to encrypted image data
-    # padded_size = len(image_orig_bytes_padded)
-    # expected_size = row_orig * column_orig * depth_orig
-    # void = expected_size - len(iv) - padded_size
-    # iv_ciphertext_void = iv + ciphertext + bytes([0] * void)
+    # Convert ciphertext bytes to encrypted image data
+    padded_size = len(image_orig_bytes_padded)
+    expected_size = row_orig * column_orig * depth_orig
+    void = expected_size - len(iv) - padded_size
+    iv_ciphertext_void = iv + ciphertext + bytes([0] * void)
     
     # print("iv_ciphertext_void size:", len(iv_ciphertext_void))
     # print("Expected size:", expected_size)
 
+    reshaped_array = np.frombuffer(iv_ciphertext_void, dtype=np.uint8).reshape(row_orig + 1, column_orig, depth_orig)
+    _, encoded_img = cv2.imencode('.jpg', reshaped_array)
     # reshaped_array = np.frombuffer(iv_ciphertext_void, dtype=np.uint8).reshape(row_orig, column_orig, depth_orig)
 
     # # Encode the reshaped array to a JPEG image
@@ -89,11 +91,11 @@ def encrypt_image(img_bytes):
     # if not success:
     #     return b'Encoding failed'
 
-    # # Convert encoded image data to bytes
-    # encrypted_img = encoded_img.tobytes()
+    # Convert encoded image data to bytes
+    encrypted_img = encoded_img.tobytes()
 
-    # Concatenate IV and ciphertext
-    encrypted_img = iv + ciphertext
+    # # Concatenate IV and ciphertext
+    # encrypted_img = iv + ciphertext
 
     return encrypted_img, key
 
