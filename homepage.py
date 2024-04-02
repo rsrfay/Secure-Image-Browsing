@@ -6,10 +6,11 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from Crypto.Random import get_random_bytes
 import mysql.connector
-from werkzeug.utils import secure_filename
+# from werkzeug.utils import secure_filename
 import base64
 from PIL import Image
-import io 
+import sys
+
 # import sys
 
 # Database 
@@ -52,6 +53,58 @@ def encrypt_decrypt():
 
     return decrypted_img
 
+# def encrypt_image(img_bytes):
+#     mode = AES.MODE_CBC
+#     key_size = 32
+#     iv_size = AES.block_size if mode == AES.MODE_CBC else 0
+
+#     # Load original image
+#     image_orig = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), -1)
+#     row_orig, column_orig, depth_orig = image_orig.shape
+
+#     # Encrypt
+#     key = get_random_bytes(key_size)
+#     iv = get_random_bytes(iv_size)
+#     cipher = AES.new(key, AES.MODE_CBC, iv) if mode == AES.MODE_CBC else AES.new(key, AES.MODE_ECB)
+#     image_orig_bytes_padded = pad(img_bytes, AES.block_size)
+#     ciphertext = cipher.encrypt(image_orig_bytes_padded)
+
+#     # Convert ciphertext bytes to encrypted image data
+#     padded_size = len(image_orig_bytes_padded) - len(img_bytes)
+#     void = column_orig * depth_orig - iv_size - padded_size
+#     iv_ciphertext_void = iv + ciphertext + bytes(void)
+#     # encrypted_img = cv2.imencode('.jpg', np.frombuffer(iv_ciphertext_void, dtype=np.uint8).reshape(row_orig, column_orig, depth_orig))[1].tostring()
+ 
+#     # Reshape the array to match the dimensions of the original image
+#     expected_size = row_orig * column_orig * depth_orig
+#     if len(iv_ciphertext_void) != expected_size:
+#         return b'Invalid image size'
+#     reshaped_array = np.frombuffer(iv_ciphertext_void, dtype=np.uint8).reshape(row_orig, column_orig, depth_orig)
+
+#     # Encode the reshaped array to a JPEG image
+#     success, encoded_img = cv2.imencode('.jpg', reshaped_array)
+
+#     if not success:
+#         return b'Encoding failed'
+
+#     # Convert encoded image data to bytes
+#     encrypted_img = encoded_img.tobytes()
+    
+#      # Prepare the INSERT query
+#     insert_query = 'INSERT INTO images (encryptedImg) VALUES (%s)'
+
+#     # Create a cursor object to execute SQL queries
+#     cursor = mydb.cursor()
+
+#     # Execute the INSERT statement with the encrypted image data
+#     cursor.execute(insert_query, (encrypted_img,))
+
+#     # Commit the transaction
+#     mydb.commit()
+
+#     return encrypted_img
+
+# can use this ver
 def encrypt_image(img_bytes):
     mode = AES.MODE_CBC
     key_size = 32
@@ -61,6 +114,8 @@ def encrypt_image(img_bytes):
     image_orig = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), -1)
     row_orig, column_orig, depth_orig = image_orig.shape
 
+    # print("Original image dimensions:", row_orig, "x", column_orig, "x", depth_orig)
+
     # Encrypt
     key = get_random_bytes(key_size)
     iv = get_random_bytes(iv_size)
@@ -69,46 +124,27 @@ def encrypt_image(img_bytes):
     ciphertext = cipher.encrypt(image_orig_bytes_padded)
 
     # Convert ciphertext bytes to encrypted image data
-    padded_size = len(image_orig_bytes_padded) - len(img_bytes)
-    void = column_orig * depth_orig - iv_size - padded_size
-    iv_ciphertext_void = iv + ciphertext + bytes(void)
-    # encrypted_img = cv2.imencode('.jpg', np.frombuffer(iv_ciphertext_void, dtype=np.uint8).reshape(row_orig, column_orig, depth_orig))[1].tostring()
- 
-    # Reshape the array to match the dimensions of the original image
+    padded_size = len(image_orig_bytes_padded)
     expected_size = row_orig * column_orig * depth_orig
-    if len(iv_ciphertext_void) != expected_size:
-        return b'Invalid image size'
+    void = expected_size - len(iv) - padded_size
+    iv_ciphertext_void = iv + ciphertext + bytes([0] * void)
+    
+    print("iv_ciphertext_void size:", len(iv_ciphertext_void))
+    print("Expected size:", expected_size)
+
     reshaped_array = np.frombuffer(iv_ciphertext_void, dtype=np.uint8).reshape(row_orig, column_orig, depth_orig)
 
     # Encode the reshaped array to a JPEG image
     success, encoded_img = cv2.imencode('.jpg', reshaped_array)
 
     if not success:
-        return 'Encoding failed'
+        return b'Encoding failed'
 
     # Convert encoded image data to bytes
-    # encrypted_img = encoded_img.tobytes()
+    encrypted_img = encoded_img.tobytes()
 
-    try:
-        # Read binary data from file
-        with open(encoded_img, "rb") as file:
-            image_data = file.read()
-    except FileNotFoundError as e:
-        return f'Error: {e}'
-    
-     # Prepare the INSERT query
-    insert_query = 'INSERT INTO images (encryptedImg) VALUES (%s)'
+    return encrypted_img, key
 
-    # Create a cursor object to execute SQL queries
-    cursor = mydb.cursor()
-
-    # Execute the INSERT statement with the encrypted image data
-    cursor.execute(insert_query, (image_data,))
-
-    # Commit the transaction
-    mydb.commit()
-
-    return image_data
 
 def decrypt_image(encrypted_img):
     mode = AES.MODE_CBC
@@ -142,7 +178,7 @@ def decrypt_image(encrypted_img):
 def display_image(image_id):
     # Fetch image data from the database
     cursor = mydb.cursor()
-    query = "SELECT Img FROM images WHERE imageID = %s"
+    query = "SELECT encryptedImg FROM images WHERE imageID = %s"
     cursor.execute(query, (image_id,))
     result = cursor.fetchone()
 
@@ -186,20 +222,20 @@ def upload_file():
             image_data = file.read()
     except FileNotFoundError as e:
         return f'Error: {e}'
-
+    
+    encrypted_img, key = encrypt_image(image_data)
+    
     # Prepare the INSERT query
-    insert_query = 'INSERT INTO images (Img) VALUES (%s)'
+    insert_query = 'INSERT INTO images (Img, encryptedImg, keyImg) VALUES (%s, %s, %s)'
 
     # Create a cursor object to execute SQL queries
     cursor = mydb.cursor()
 
     # Execute the INSERT statement with the BLOB data
-    cursor.execute(insert_query, (image_data,))
+    cursor.execute(insert_query, (image_data, encrypted_img, key,))
 
     # Commit the transaction
     mydb.commit()
-
-    encrypt_image(image_data)
 
     # Store the file path in the database or use it as needed
     return 'File uploaded successfully: {}'.format(file_path)
