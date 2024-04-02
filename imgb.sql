@@ -14,5 +14,5 @@ keyImg BLOB,
 decryptedImg LONGBLOB
 );
 
-drop table images;
+-- drop table images;
 
