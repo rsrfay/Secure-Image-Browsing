@@ -65,8 +65,11 @@ input[type="button"]:hover,
 input[type="submit"]:hover {
     background-color: #f4a3ab;
 }
-#uploaded-img{
-    width: 50%;
+
+#uploaded-img, #encrypted-img{
+    width: 40%;
     height: auto;
     margin: auto;
+    display: flex;
+    justify-content: center;
 }
