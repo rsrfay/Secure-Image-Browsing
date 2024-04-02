@@ -66,6 +66,7 @@ input[type="submit"]:hover {
     background-color: #f4a3ab;
 }
 #uploaded-img{
-    width: 20%;
+    width: 50%;
     height: auto;
+    margin: auto;
 }
