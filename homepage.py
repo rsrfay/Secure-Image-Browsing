@@ -191,7 +191,8 @@ def upload_file():
 
     print('File uploaded successfully: {}'.format(file_path))
     # return 'File uploaded successfully: {}'.format(file_path)
-    return redirect(url_for('index'))
+    # return redirect(url_for('index'))
+    return render_template('index.html', upload_file=True, image_data=image_data, encryptedImage=encrypted_img)
 
 if __name__ == '__main__':
     app.run(debug=True)

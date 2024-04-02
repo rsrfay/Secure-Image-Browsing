@@ -17,14 +17,14 @@
     {% if upload_file %}
     <div class="upload-result"> 
         <h3> Image Upload Result </h3> 
-        <img src="data:image/jpeg;base64,{{ image_data }}" alt="Image">
+        <img src="data:image/jpeg;base64,{{ image_data }}" alt="Original Image">
     </div>
     {% endif %}
 
-    {% if encrypt_image %}
+    {% if encryptedImage %}
     <div class="encryption-result"> 
         <h3> Image Encryption Result </h3> 
-        <img src="data:image/jpeg;base64,{{ encryptedImage }}" alt="Image">
+        <img src="data:image/jpeg;base64,{{ encryptedImage }}" alt="Encrypted Image">
     </div>
     {% endif %}
 
