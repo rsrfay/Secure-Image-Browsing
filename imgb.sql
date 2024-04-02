@@ -9,7 +9,7 @@ use imgbDB;
 create table if not exists images(
 imageID int auto_increment primary key,
 Img LONGBLOB,
-encryptedImgcustomers LONGBLOB,
+encryptedImg LONGBLOB,
 keyImg BLOB,
 decryptedImg LONGBLOB
 );
